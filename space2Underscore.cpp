@@ -83,7 +83,7 @@
 
 # include <boost/filesystem.hpp>
 
-# include <gsavopul.hpp>        // Namespace gsav
+//# include <gsavopul.hpp>        // Namespace gsav
 
 //using namespace std;
 //using namespace std::chrono;
@@ -98,8 +98,8 @@
 int main()
 //int main(int argc, char * argv[])
 {
-    std::locale lgr(std::locale("el_GR.UTF-8"));
-    std::locale::global(lgr);
+//    std::locale lgr(std::locale("el_GR.UTF-8"));
+//    std::locale::global(lgr);
 //    std::cout.imbue(lgr);
 //    std::cin.imbue(lgr);
     //============Αρχή κώδικα==================================
@@ -124,7 +124,7 @@ int main()
 	}
 
     //============Τέλος κώδικα=================================
-    std::atexit(calcTime);
+//    std::atexit(calcTime);
 	return 0;
 }
 
