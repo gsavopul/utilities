@@ -93,60 +93,49 @@
 //using namespace std::literals::chrono_literals;
 
 //  Η συνάρτηση μετατρέπει όλους τους χαρακτήρες μιας συμβολοσειράς σε κεφαλαίους
-std::string upperCase(std::string inputString)
+std::wstring upperCase(std::wstring inputString)
 {
-	std::wstring ws;
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> cnv;
+    for (auto &stringCharacter: inputString)
+   	    stringCharacter=std::toupper(stringCharacter,std::locale(""));
 
-	ws=cnv.from_bytes(inputString);
-
-    for (auto &stringCharacter: ws)
-        stringCharacter=std::toupper(stringCharacter,std::locale(""));
-
-    return cnv.to_bytes(ws);
+	return inputString;
 }
 
 
 //  Η συνάρτηση μετατρέπει όλους τους χαρακτήρες μιας συμβολοσειράς σε πεζούς
-std::string lowerCase(std::string inputString)
+std::wstring lowerCase(std::wstring inputString)
 {
-	std::wstring ws;
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> cnv;
+    for (auto &stringCharacter: inputString)
+   	    stringCharacter=std::tolower(stringCharacter,std::locale(""));
 
-	ws=cnv.from_bytes(inputString);
-
-    for (auto &stringCharacter: ws)
-        stringCharacter=std::tolower(stringCharacter,std::locale(""));
-
-    return cnv.to_bytes(ws);
+	return inputString;
 }
 
 
 //  Η συνάρτηση μετατρέπει όλους τους χαρακτήρες μιας συμβολοσειράς σε χαρακτήρες τίτλων
-std::string titleCase(std::string inputString)
+std::wstring titleCase(std::wstring inputString)
 {
 
-    inputString = lowerCase(inputString);
+    inputString=lowerCase(inputString);
+   	std::wregex reg(L"[[:space:]]+");
 
-	std::wstring ws;
-	std::wstring_convert<std::codecvt_utf8<wchar_t>> cnv;
+    std::wsregex_iterator ri(inputString.begin(),inputString.end(),reg);
+   	std::wsregex_iterator nd;
 
-	ws=cnv.from_bytes(inputString);
-    std::wregex reg(L"[[:space:]]+");
+	if (regex_search(inputString, reg))
+	{
+		auto x = ri->prefix().first;
 
-    std::wsregex_iterator ri(ws.begin(),ws.end(),reg);
-    std::wsregex_iterator nd;
-    auto x = ri->prefix().first;
+		while (ri != nd)
+		{
+			std::wstring::size_type idx = distance(x, ri->suffix().first);
+			inputString[idx] = std::toupper(inputString[idx], std::locale(""));
+			++ri;
+		}
+	}
 
-    while(ri!=nd)
-    {
-        std::wstring::size_type idx=distance(x,ri->suffix().first);
-        ws[idx] = std::toupper(ws[idx],std::locale(""));
-        ++ri;
-    }
-
-    ws[0] = std::toupper(ws[0],std::locale(""));
-    return cnv.to_bytes(ws);
+   	inputString[0] = std::toupper(inputString[0],std::locale(""));
+	return inputString;
 }
 
 
@@ -166,25 +155,25 @@ int main()
 	boost::filesystem::directory_iterator dif;
 	boost::filesystem::path parentPath = dit->path().parent_path();
 
-	std::string oldName, newName, fileName, newFileName;
+	std::wstring oldName, newName, fileName, newFileName;
 
 	int fileNameOperation;
 	do
 	{
-		std::cout<<"Choose filename transformation: "<<std::endl;
-		std::cout<<"0 - Abort operation"<<std::endl;
-		std::cout<<"1 - Convert filenames to title case"<<std::endl;
-		std::cout<<"2 - Convert filenames to upper case"<<std::endl;
-		std::cout<<"3 - Convert filenames to lower case"<<std::endl;
+		std::wcout<<L"Choose filename transformation: "<<std::endl;
+		std::wcout<<L"0 - Abort operation"<<std::endl;
+		std::wcout<<L"1 - Convert filenames to title case"<<std::endl;
+		std::wcout<<L"2 - Convert filenames to upper case"<<std::endl;
+		std::wcout<<L"3 - Convert filenames to lower case"<<std::endl;
 
-		std::cout<<"\nEnter your choise: ";
-		std::cin>>fileNameOperation;
+		std::wcout<<L"\nEnter your choise: ";
+		std::wcin>>fileNameOperation;
 	} while (fileNameOperation<-1 || fileNameOperation>4);
 
 	if (fileNameOperation==0) exit(0);
 	while (dit!=dif)
 	{
-		fileName = dit->path().filename().string();
+		fileName = dit->path().filename().wstring();
 		switch (fileNameOperation)
 		{
 			case 1:
@@ -197,7 +186,7 @@ int main()
 				newFileName = lowerCase(fileName);
 				break;
 		}
-		boost::filesystem::rename(dit->path(), parentPath.string()+"/"+newFileName);
+		boost::filesystem::rename(dit->path(), parentPath.wstring()+L"/"+newFileName);
 		++dit;
 	}
 

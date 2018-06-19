@@ -8,4 +8,4 @@
 ## Description
 space2Underscore.cpp - Uses _Boost filesystem_. Can be compiled using the run script with the -b flag.
 
-transformFileNames.cpp - Uses _Boost filesystem_. Compilation as above. Should work fine with _UTF-8 filesystems_ but may require changes for others due to codecvt_utf8.
+transformFileNames.cpp - Uses _Boost filesystem_. Compilation as above. Works with wide strings.
