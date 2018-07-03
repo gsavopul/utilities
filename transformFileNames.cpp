@@ -82,6 +82,7 @@
 //# include <chrono>
 
 # include <boost/filesystem.hpp>
+# include <boost/algorithm/string.hpp>
 
 //# include <gsavopul.hpp>        // Namespace gsav
 
@@ -92,31 +93,13 @@
 //using namespace std::literals::complex_literals;
 //using namespace std::literals::chrono_literals;
 
-//  Η συνάρτηση μετατρέπει όλους τους χαρακτήρες μιας συμβολοσειράς σε κεφαλαίους
-std::wstring upperCase(std::wstring inputString)
-{
-    for (auto &stringCharacter: inputString)
-   	    stringCharacter=std::toupper(stringCharacter,std::locale(""));
-
-	return inputString;
-}
-
-
-//  Η συνάρτηση μετατρέπει όλους τους χαρακτήρες μιας συμβολοσειράς σε πεζούς
-std::wstring lowerCase(std::wstring inputString)
-{
-    for (auto &stringCharacter: inputString)
-   	    stringCharacter=std::tolower(stringCharacter,std::locale(""));
-
-	return inputString;
-}
 
 
 //  Η συνάρτηση μετατρέπει όλους τους χαρακτήρες μιας συμβολοσειράς σε χαρακτήρες τίτλων
 std::wstring titleCase(std::wstring inputString)
 {
 
-    inputString=lowerCase(inputString);
+    boost::to_lower(inputString,std::locale(""));
    	std::wregex reg(L"[[:space:]]+");
 
     std::wsregex_iterator ri(inputString.begin(),inputString.end(),reg);
@@ -180,10 +163,12 @@ int main()
 				newFileName = titleCase(fileName);
 				break;
 			case 2:
-				newFileName = upperCase(fileName);
+				newFileName=fileName;
+				boost::to_upper(newFileName,std::locale(""));
 				break;
 			case 3:
-				newFileName = lowerCase(fileName);
+				newFileName=fileName;
+				boost::to_lower(newFileName,std::locale(""));
 				break;
 		}
 		boost::filesystem::rename(dit->path(), parentPath.wstring()+L"/"+newFileName);
@@ -194,4 +179,3 @@ int main()
 //    std::atexit(calcTime);
 	return 0;
 }
-
