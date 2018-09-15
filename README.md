@@ -5,6 +5,7 @@
 
 - transformFileNames.cpp
 
+- barcodeValidator
 
 ## Description
 **space2Underscore.cpp**
@@ -19,3 +20,7 @@ When executed in a directory this program converts all filenames to title/upper/
 - the transformation lower->upper->lower might produce a "different" filename that the original (eg ς->Σ->σ).
 
 - the transformation upper->lower might produce "grammatically incorrect" filenames (eg Σ->σ instead of ς at the end of a word).
+
+**barcodeValidator**
+
+This directory contains a small Qt project for validating barcodes (specifically, 12-digit UPC or 13-digit EAN). Validation is being handled using QValidator and QRegExp.
