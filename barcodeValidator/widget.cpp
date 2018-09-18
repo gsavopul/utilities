@@ -10,7 +10,7 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    resize(50,100);
+    this->setFixedSize(350,150);
     this->setWindowTitle("UPC/EAN Barcode Validator");
     ui->label_2->setText("");
 
