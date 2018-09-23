@@ -100,7 +100,7 @@ std::wstring titleCase(std::wstring inputString)
 {
 
     boost::to_lower(inputString,std::locale(""));
-   	std::wregex reg(L"[[:space:]]+");
+   	std::wregex reg(L"[[:space:]]+([[:punct:]]+)?");
 
     std::wsregex_iterator ri(inputString.begin(),inputString.end(),reg);
    	std::wsregex_iterator nd;
