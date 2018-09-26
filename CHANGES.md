@@ -1,3 +1,8 @@
+* 26/9/2018 space2Underscore.cpp
+Added the inverse procedure as a command line option. If the program is
+execuded from the command line with the option -r or -R, it will convert
+underscores to spaces.
+
 * 23/9/2018 transformFileNames.cpp
 Changed regex for title case. The new expression takes into account the possibility
 that an optional punctuation mark (eg parenthesis) may appear right after the space,

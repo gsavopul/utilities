@@ -11,7 +11,8 @@
 **space2Underscore.cpp**
 
 When executed in a directory, this small program converts every white character in the filenames to an underscore. The process is non recursive.
-It uses _Boost filesystem_ and _Boost string algorithms_. One way to compile and run it is through the run script with the -b flag.
+It uses _Boost filesystem_ and _Boost string algorithms_. One way to compile and run it is through the run script with the -b flag. The program
+can also convert underscores to spaces using the -r or -R command line option.
 
 **transformFileNames.cpp**
 

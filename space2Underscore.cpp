@@ -95,14 +95,18 @@
 
 
 
-int main()
-//int main(int argc, char * argv[])
+//int main()
+int main(int argc, char * argv[])
 {
 //    std::locale lgr(std::locale("el_GR.UTF-8"));
 //    std::locale::global(lgr);
 //    std::cout.imbue(lgr);
 //    std::cin.imbue(lgr);
     //============Αρχή κώδικα==================================
+
+	bool invFlag=false;
+	if (argc == 2)
+		if (std::strcmp(argv[1],"-r")==0 || std::strcmp(argv[1],"-R")==0) invFlag=true;
 
 	boost::filesystem::path d=boost::filesystem::current_path();
 
@@ -115,14 +119,25 @@ int main()
 	while (dit!=dif)
 	{
 		fileName = dit->path().filename().string();
-		if ( regex_search(fileName,std::regex("[[:blank:]]")) )
+		if (!invFlag)
 		{
-			newFileName = regex_replace(fileName,std::regex("[[:blank:]]"),"_");
-			boost::filesystem::rename(dit->path(), parentPath.string()+"/"+newFileName);
+			if ( regex_search(fileName,std::regex("[[:blank:]]")) )
+			{
+				newFileName = regex_replace(fileName,std::regex("[[:blank:]]"),"_");
+				boost::filesystem::rename(dit->path(), parentPath.string()+"/"+newFileName);
+			}
+			++dit;
 		}
-		++dit;
+		else
+		{
+			if ( regex_search(fileName,std::regex("_")) )
+			{
+				newFileName = regex_replace(fileName,std::regex("_")," ");
+				boost::filesystem::rename(dit->path(), parentPath.string()+"/"+newFileName);
+			}
+			++dit;
+		}
 	}
-
     //============Τέλος κώδικα=================================
 //    std::atexit(calcTime);
 	return 0;
