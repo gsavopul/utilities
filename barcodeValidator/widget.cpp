@@ -10,14 +10,14 @@ Widget::Widget(QWidget *parent) :
     ui(new Ui::Widget)
 {
     ui->setupUi(this);
-    this->setFixedSize(350,150);
-    this->setWindowTitle("UPC/EAN Barcode Validator");
-    ui->label_2->setText("");
+    setFixedSize(350,150);
+    setWindowTitle("UPC/EAN Barcode Validator");
+    ui->outcomeLabel->setText("");
 
     QValidator *val= new QRegExpValidator(QRegExp("[0-9]{12,13}"),this);
-    ui->lineEdit->setValidator(val);
+    ui->barcodeEdit->setValidator(val);
 
-    connect(ui->lineEdit,&QLineEdit::textChanged,this,&Widget::checker);
+    connect(ui->barcodeEdit,&QLineEdit::textChanged,this,&Widget::checker);
 }
 
 Widget::~Widget()
@@ -27,8 +27,11 @@ Widget::~Widget()
 
 void Widget::checker(void)
 {
-    std::string barCodeString=ui->lineEdit->text().toStdString();
-    int digitExp;
+    std::string barCodeString=ui->barcodeEdit->text().toStdString();
+    int digitExp=0;
+
+    if (barCodeString.length() <12)
+        ui->outcomeLabel->setText("Number of entered digits: "+QString::number(barCodeString.length()));
 
     if (barCodeString.length() == 12)
     {
@@ -45,9 +48,9 @@ void Widget::checker(void)
             digitExp = 10 - digitExp;
 
         if (std::to_string(digitExp) == barCodeString.substr(barCodeString.length()-1))
-            ui->label_2->setText("Valid 12-digit UPC barcode!");
+            ui->outcomeLabel->setText("Valid 12-digit UPC barcode!");
         else
-            ui->label_2->setText("Invalid 12-digit UPC barcode!");
+            ui->outcomeLabel->setText("Invalid 12-digit UPC barcode!");
     }
 
     if (barCodeString.length() == 13)
@@ -65,8 +68,8 @@ void Widget::checker(void)
             digitExp = 10 - digitExp;
 
         if (std::to_string(digitExp) == barCodeString.substr(barCodeString.length()-1))
-            ui->label_2->setText("Valid 13-digit EAN barcode!");
+            ui->outcomeLabel->setText("Valid 13-digit EAN barcode!");
         else
-            ui->label_2->setText("Invalid 13-digit EAN barcode!");
+            ui->outcomeLabel->setText("Invalid 13-digit EAN barcode!");
     }
 }

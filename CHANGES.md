@@ -1,3 +1,6 @@
+* 1/10/2018 barcodeValidator
+Fixed the initialization of digitExp. Minor name changes for the GUI elements.
+
 * 26/9/2018 space2Underscore.cpp
 Added the inverse procedure as a command line option. If the program is
 execuded from the command line with the option -r or -R, it will convert

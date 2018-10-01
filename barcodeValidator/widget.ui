@@ -2,25 +2,13 @@
 <ui version="4.0">
  <class>Widget</class>
  <widget class="QWidget" name="Widget">
-  <property name="windowModality">
-   <enum>Qt::NonModal</enum>
-  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>316</width>
+    <height>290</height>
    </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="windowTitle">
-   <string>Widget</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -55,7 +43,7 @@ Enter barcode for testing.</string>
         <string>&amp;Barcode:</string>
        </property>
        <property name="buddy">
-        <cstring>lineEdit</cstring>
+        <cstring>barcodeEdit</cstring>
        </property>
       </widget>
      </item>
@@ -73,7 +61,7 @@ Enter barcode for testing.</string>
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="barcodeEdit"/>
      </item>
     </layout>
    </item>
@@ -93,7 +81,7 @@ Enter barcode for testing.</string>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="clearButton">
        <property name="text">
         <string>&amp;Clear</string>
        </property>
@@ -113,7 +101,7 @@ Enter barcode for testing.</string>
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton_2">
+      <widget class="QPushButton" name="quitButton">
        <property name="text">
         <string>&amp;Quit</string>
        </property>
@@ -135,9 +123,15 @@ Enter barcode for testing.</string>
     </spacer>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="outcomeLabel">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
      <property name="text">
       <string/>
+     </property>
+     <property name="scaledContents">
+      <bool>false</bool>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
@@ -147,33 +141,38 @@ Enter barcode for testing.</string>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>barcodeEdit</tabstop>
+  <tabstop>clearButton</tabstop>
+  <tabstop>quitButton</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
-   <sender>pushButton</sender>
+   <sender>clearButton</sender>
    <signal>clicked()</signal>
-   <receiver>lineEdit</receiver>
+   <receiver>barcodeEdit</receiver>
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>49</x>
-     <y>254</y>
+     <x>69</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
-     <x>310</x>
-     <y>45</y>
+     <x>305</x>
+     <y>122</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_2</sender>
+   <sender>quitButton</sender>
    <signal>clicked()</signal>
    <receiver>Widget</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>349</x>
-     <y>254</y>
+     <x>305</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
      <x>199</x>
@@ -182,25 +181,25 @@ Enter barcode for testing.</string>
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>clearButton</sender>
    <signal>clicked()</signal>
-   <receiver>label_2</receiver>
+   <receiver>outcomeLabel</receiver>
    <slot>clear()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>49</x>
-     <y>254</y>
+     <x>69</x>
+     <y>206</y>
     </hint>
     <hint type="destinationlabel">
-     <x>199</x>
-     <y>282</y>
+     <x>208</x>
+     <y>280</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>pushButton</sender>
+   <sender>clearButton</sender>
    <signal>clicked()</signal>
-   <receiver>lineEdit</receiver>
+   <receiver>barcodeEdit</receiver>
    <slot>setFocus()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -208,8 +207,8 @@ Enter barcode for testing.</string>
      <y>201</y>
     </hint>
     <hint type="destinationlabel">
-     <x>310</x>
-     <y>115</y>
+     <x>305</x>
+     <y>122</y>
     </hint>
    </hints>
   </connection>
