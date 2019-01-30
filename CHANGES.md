@@ -1,3 +1,11 @@
+* 30/1/2019 space2Underscore.cpp
+Added as an option the ability to choose the character to use. The program now
+uses boost::program_options, and accepts the following flags:
+-c or --character to choose the character into which to convert the spaces found. If this option is ommited, a default value of an underscore is used.
+-r or --reverse to reverse the operation and convert the chosen character to space.
+-h or --help to print usage instructions.
+In windows, it is case insensitive and also accepts /c, /r, /h.
+
 * 1/10/2018 barcodeValidator
 Fixed the initialization of digitExp. Minor name changes for the GUI elements.
 
