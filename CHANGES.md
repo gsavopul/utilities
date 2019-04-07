@@ -1,3 +1,12 @@
+* 7/4/2019 transformFileNames.cpp
+The program now uses boost::program_options, and accepts the following flags:
+-h or --help to print usage instructions.
+-t or --titlecase to convert filenames to titlecase.
+-u or --uppercase to convert filenames to uppercase.
+-l or --lowercase to convert filenames to lowercase.
+-f or --firstcap to convert filenames to lowercase with a starting capital.
+-c or --complex to perform complex conversion (not implemented yet).
+
 * 30/1/2019 space2Underscore.cpp
 Added as an option the ability to choose the character to use. The program now
 uses boost::program_options, and accepts the following flags:
