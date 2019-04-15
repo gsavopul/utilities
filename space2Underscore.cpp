@@ -24,9 +24,9 @@
 //# include <vector>
 //# include <deque>
 //# include <list>
-# include <set>
+//# include <set>
 //# include <map>
-//# include <unordered_set>
+# include <unordered_set>
 //# include <unordered_map>
 
 //# include <stack>
@@ -38,7 +38,7 @@
 
 //  -----------------------------------------------------------------  algorithms
 //# include <algorithm>
-//# include <iterator>
+# include <iterator>
 //# include <utility>
 //# include <functional>
 //# include <numeric>
@@ -81,6 +81,7 @@
 //# include <ctime>				// C
 //# include <chrono>
 
+# include <boost/predef.h>
 # include <boost/filesystem.hpp>
 # include <boost/program_options.hpp>
 
@@ -93,8 +94,13 @@
 //using namespace std::literals::complex_literals;
 //using namespace std::literals::chrono_literals;
 
-
-void character_check(char ch, std::string &str, std::string &str_reverse, std::set<char> invalids);
+int setup_options(boost::program_options::variables_map &vm, int argc, char * argv[]);
+void define_options(boost::program_options::options_description &desc);
+int define_style(void);
+void parse_options(boost::program_options::options_description &desc, boost::program_options::variables_map &vm, int argc, char * argv[]);
+std::unordered_set<char> define_invalids(void);
+void character_check(char ch, std::string &str, std::string &str_reverse, std::unordered_set<char> invalids);
+void loop_over_files(std::string str, std::regex reg);
 
 //int main()
 int main(int argc, char * argv[])
@@ -105,113 +111,21 @@ int main(int argc, char * argv[])
 //    std::cin.imbue(lgr);
     //============Αρχή κώδικα==================================
 
-	boost::program_options::options_description opt("Options");
-
-	opt.add_options()
-		("character,c",boost::program_options::value<char>()->default_value('_'),
-		"Converts space to specified character (by default an underscore). "
-		"Note that the characters ?,<,>,\\,*,|,\',\",&,(,),{,},;,` should be escaped at the command line in UNIX. "
-		"\nFor example: space2Underscore -c \\?. "
-		"\nSimilarly, characters ^ and & should be escaped at the command line in Windows. "
-		"\nFor example: space2Underscore -c^^")
-		("reverse,r","Converts specified character (by default an underscore) to space")
-		("help,h","Prints usage instructions");
-
 	boost::program_options::variables_map vm;
-	boost::filesystem::path d=boost::filesystem::current_path();
-
-	int cmd_style;
-	if (d.root_name().empty())
-		cmd_style = boost::program_options::command_line_style::unix_style;
-	else
-	{
-		cmd_style = boost::program_options::command_line_style::allow_slash_for_short
-					| boost::program_options::command_line_style::allow_dash_for_short
-					| boost::program_options::command_line_style::case_insensitive
-					| boost::program_options::command_line_style::allow_short
- 					| boost::program_options::command_line_style::allow_long
-					| boost::program_options::command_line_style::short_allow_next
-					| boost::program_options::command_line_style::long_allow_next
-					| boost::program_options::command_line_style::short_allow_adjacent
-					| boost::program_options::command_line_style::long_allow_adjacent
-					| boost::program_options::command_line_style::allow_sticky;
-	}
-
-
-	try
-	{
-		boost::program_options::store(boost::program_options::command_line_parser(argc, argv)
-		.options(opt)
-		.style(cmd_style)
-		.run(), vm);
-
-		boost::program_options::notify(vm);
-
-		if (vm.count("help"))
-		{
-			std::cout << "USAGE: " << argv[0] << '\n' << opt << '\n';
-			return 0;
-		}
-	}
-	catch (boost::program_options::error& poe)
-	{
-		std::cerr << poe.what() << '\n' << "USAGE: " << argv[0] << '\n' << opt << '\n';
-		return EXIT_FAILURE;
-	}
-
-	bool invFlag;
-	if (vm.count("reverse"))
-		invFlag=true;
-	else
-		invFlag=false;
+	int status = setup_options(vm,argc,argv);
+	if (status != 0) return status;
 
 	char ch=vm["character"].as<char>();
-//	Special regex symbols such as +, ? etc...
-	std::string str,str_reverse;
-	std::set<char> windows_invalids{':', '/', '?', '<', '>', '\\', '*', '|', '\"'};
-	std::set<char> unix_invalids{'/'};
 
-	if (d.root_name().empty())
-		character_check(ch,str,str_reverse,unix_invalids);
+	std::unordered_set<char> invalids = define_invalids();
+	std::string str, str_reverse;
+	character_check(ch,str,str_reverse,invalids);
+
+	if (!vm.count("reverse"))
+		loop_over_files(str, std::regex("[[:blank:]]"));
 	else
-		character_check(ch,str,str_reverse,windows_invalids);
+		loop_over_files(" ", std::regex(str_reverse));
 
-
-	boost::filesystem::directory_iterator dit(d);
-	boost::filesystem::directory_iterator dif;
-	boost::filesystem::path parentPath = dit->path().parent_path();
-
-	std::string oldName, newName, fileName, newFileName;
-
-	while (dit!=dif)
-	{
-		fileName = dit->path().filename().string();
-		if (!invFlag)
-		{
-			if ( regex_search(fileName,std::regex("[[:blank:]]")) )
-			{
-				newFileName = regex_replace(fileName,std::regex("[[:blank:]]"),str);
-				boost::filesystem::rename(dit->path(), parentPath.string()+"/"+newFileName);
-			}
-			++dit;
-		}
-		else
-		{
-			try
-			{
-				if ( regex_search(fileName,std::regex(str_reverse)) )
-				{
-					newFileName = regex_replace(fileName,std::regex(str_reverse)," ");
-					boost::filesystem::rename(dit->path(), parentPath.string()+"/"+newFileName);
-				}
-			}
-			catch (std::exception e)
-			{
-				std::cout<<"error !"<<e.what()<<std::endl;
-			}
-			++dit;
-		}
-	}
 
     //============Τέλος κώδικα=================================
 //    std::atexit(calcTime);
@@ -219,14 +133,101 @@ int main(int argc, char * argv[])
 }
 
 
-void character_check(char ch, std::string &str, std::string &str_reverse, std::set<char> invalids)
+int setup_options(boost::program_options::variables_map &vm, int argc, char * argv[])
 {
-	std::set<char> specials{':', '/', '+', '^', '$', '?', '<', '>', '\\', '*', '|', '\"', '(', ')', '{', '}', '[', ']', '.'};
+//	This subroutine sets up the options for the program and returns the map that contains them.
+	boost::program_options::options_description desc("Options");
+	define_options(desc);
+	try
+	{
+		parse_options(desc,vm,argc,argv);
+		if (vm.count("help"))
+		{
+			std::cout << "USAGE: " << argv[0] << '\n' << desc << '\n';
+			exit(0);
+		}
+		return 0;
+	}
+	catch (boost::program_options::error e)
+	{
+		std::cerr << e.what() << '\n' << "USAGE: " << argv[0] << '\n' << desc << '\n';
+		return EXIT_FAILURE;
+	}
+}
+
+
+void define_options(boost::program_options::options_description &desc)
+{
+//	This subroutine defines the options that will be recognised by this program
+	desc.add_options()
+		("help,h", "Print usage information")
+		("character,c", boost::program_options::value<char>()->default_value('_'),
+		"Converts space to specified character (by default an underscore). ")
+		("reverse,r","Converts specified character (by default an underscore) to space."
+		"\n\nNote that at the UNIX command line, the characters: ~,`,&,*,(,),;,\',\",\\,|,<,>,?"
+		" should be escaped. "
+		"\nFor example: space2Underscore -c \\?. "
+		"\n\nSimilarly, at the Windows command line, characters ^ and & should be escaped. "
+		"\nFor example: space2Underscore -c^^");
+}
+
+
+int define_style(void)
+{
+//	This subroutine defines the command line style
+	int style;
+	if (BOOST_OS_UNIX)
+		style = boost::program_options::command_line_style::unix_style;
+	else if (BOOST_OS_WINDOWS)
+		style = boost::program_options::command_line_style::unix_style |
+				boost::program_options::command_line_style::case_insensitive |
+				boost::program_options::command_line_style::allow_slash_for_short;
+
+	return style;
+}
+
+
+void parse_options(boost::program_options::options_description &desc, boost::program_options::variables_map &vm, int argc, char * argv[])
+{
+//	This subroutine runs the parser and fills the map that contains the options.
+	int style =	define_style();
+
+	boost::program_options::store(
+		boost::program_options::command_line_parser(argc,argv)
+			.options(desc)
+			.style(style)
+			.run(),
+		vm);
+
+	boost::program_options::notify(vm);
+}
+
+
+std::unordered_set<char> define_invalids()
+{
+//	This subroutine defines illegal characters that cannot be part of a filename in various systems.
+	std::unordered_set<char> invalids;
+	if (BOOST_OS_WINDOWS)
+		invalids.insert({'*', ':', '\"', '\\', '|', '<', '>', '/', '?'});
+	else if (BOOST_OS_UNIX)
+		invalids.insert('/');
+
+	return invalids;
+}
+
+
+void character_check(char ch, std::string &str, std::string &str_reverse, std::unordered_set<char> invalids)
+{
+//	This subroutine checks the character given to find out if it requires additional processing or if it is an illegal one.
+	std::unordered_set<char> specials{':', '/', '+', '^', '$', '?', '<', '>', '\\', '*', '|', '\"', '(', ')', '{', '}', '[', ']', '.'};
 
 	if ( specials.find(ch) != specials.end() )
 		if ( invalids.find(ch) != invalids.end() )
 		{
-			std::cout<<"Invalid character detected! Aborting operation!\n";
+			std::cerr<<"The character(s): ";
+			std::copy(invalids.begin(),invalids.end(),std::ostream_iterator<char>(std::cerr," "));
+			std::cerr<<"\ncannot be part of a filename in this operating system! Aborting operation!\n";
+
 			exit(EXIT_FAILURE);
 		}
 		else
@@ -236,5 +237,35 @@ void character_check(char ch, std::string &str, std::string &str_reverse, std::s
 		}
 	else
 		str=str_reverse=std::string(1,ch);
+}
+
+
+void loop_over_files(std::string str, std::regex reg)
+{
+//	This subroutine loops over the files and renames them
+	boost::filesystem::path d=boost::filesystem::current_path();
+	boost::filesystem::directory_iterator dit(d);
+	boost::filesystem::directory_iterator dif;
+	boost::filesystem::path parentPath = dit->path().parent_path();
+
+	std::string oldName, newName, fileName, newFileName;
+
+	while (dit!=dif)
+	{
+		fileName = dit->path().filename().string();
+		try
+		{
+			if ( regex_search(fileName,reg) )
+			{
+				newFileName = regex_replace(fileName,reg,str);
+				boost::filesystem::rename(dit->path(), parentPath.string()+"/"+newFileName);
+			}
+		}
+		catch (std::exception e)
+		{
+			std::cerr<<e.what()<<std::endl;
+		}
+		++dit;
+	}
 }
 
