@@ -1,3 +1,12 @@
+* 21/5/2019 transformFileNames.cpp
+
+Refactoring in smaller program units. The program now uses __boost/predef.h__ macros to identify the OS.
+Added an interactive mode, which can be useful if one wants to rename only a few files in a directory and not all.
+This mode jumps in with the -i/--interactive flag at the command line. It can also take charge of things if the program
+starts with no options at the command line, by specifying a negative integer at the operation chooser menu screen.
+
+
+
 * 15/4/2019 space2Underscore.cpp
 
 Refactoring in smaller program units. The program now uses __boost/predef.h__ macros to identify the OS.
