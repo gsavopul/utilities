@@ -1,3 +1,8 @@
+* 3/9/2019 transformFileNames.cpp
+Minor refactoring. Adopted namespace alias npo for boost::program_options. This shortens function prototypes significantly.
+A second namespace alias for boost::program_options::command_line_style has been adopted as well, but is limited to the appropriate function.
+Also added new option to print program version. Version number set to #1.
+
 * 21/5/2019 transformFileNames.cpp
 
 Refactoring in smaller program units. The program now uses __boost/predef.h__ macros to identify the OS.

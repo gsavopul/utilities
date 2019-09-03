@@ -95,17 +95,21 @@
 //using namespace std::literals::complex_literals;
 //using namespace std::literals::chrono_literals;
 
-int setup_options(boost::program_options::variables_map &vm, int argc, char * argv[]);
-void define_options(boost::program_options::options_description &desc);
+namespace npo = boost::program_options;
+
+
+int setup_options(npo::variables_map &vm, int argc, char * argv[]);
+void define_options(npo::options_description &desc);
 int define_style(void);
-void parse_options(boost::program_options::options_description &desc, boost::program_options::variables_map &vm, int argc, char * argv[]);
+void parse_options(npo::options_description &desc, npo::variables_map &vm, int argc, char * argv[]);
 void choose_operation(int &fileNameOperation);
 std::wstring titleCase(std::wstring inputString);
 void complex_transformation(std::wstring & newFileName);
-void loop_over_files(int fileNameOperation, boost::program_options::variables_map vm);
-std::wstring convertFileName(int fileNameOperation, boost::program_options::variables_map vm, std::wstring fileName);
+void loop_over_files(int fileNameOperation, npo::variables_map vm);
+std::wstring convertFileName(int fileNameOperation, npo::variables_map vm, std::wstring fileName);
 bool confirmChange(std::wstring fileName, std::wstring newFileName);
-bool checkNoOp(int fileNameOperation, boost::program_options::variables_map vm);
+bool checkNoOp(int fileNameOperation, npo::variables_map vm);
+void printVersion();
 
 
 //int main()
@@ -117,7 +121,7 @@ int main(int argc, char * argv[])
 //    std::cin.imbue(lgr);
     //============Αρχή κώδικα==================================
 
-	boost::program_options::variables_map vm;
+	npo::variables_map vm;
 	int fileNameOperation = std::numeric_limits<int>::max();
 
 	if (argc != 1)
@@ -133,6 +137,11 @@ int main(int argc, char * argv[])
 
 	if (!checkNoOp(fileNameOperation,vm))
 		loop_over_files(fileNameOperation,vm);
+	else
+	{
+		if (vm.count("version"))
+			printVersion();
+	}
 
 
     //============Τέλος κώδικα=================================
@@ -141,9 +150,9 @@ int main(int argc, char * argv[])
 }
 
 
-int setup_options(boost::program_options::variables_map &vm, int argc, char * argv[])
+int setup_options(npo::variables_map &vm, int argc, char * argv[])
 {
-	boost::program_options::options_description desc("Options");
+	npo::options_description desc("Options");
 
 	define_options(desc);
 	try
@@ -156,7 +165,7 @@ int setup_options(boost::program_options::variables_map &vm, int argc, char * ar
 		}
 		return 0;
 	}
-	catch (boost::program_options::error &e)
+	catch (npo::error &e)
 	{
 		std::cerr << e.what() << '\n' << "USAGE: " << argv[0] << '\n' << desc << '\n';
 		return EXIT_FAILURE;
@@ -164,16 +173,17 @@ int setup_options(boost::program_options::variables_map &vm, int argc, char * ar
 }
 
 
-void define_options(boost::program_options::options_description &desc)
+void define_options(npo::options_description &desc)
 {
 //	This subroutine defines the options that will be recognised by this program
 	desc.add_options()
 		("help,h", "Print usage information")
+		("version,v", "Show version information")
 		("interactive,i", "Confirm user's permission for every proposed filename change")
-		("titlecase,t","Convert filename to title case")
-		("uppercase,u","Convert filename to uppercase")
-		("lowercase,l","Convert filename to lowercase")
-		("firstcap,f","Capitalize first letter, all others in lowercase")
+		("titlecase,t", "Convert filename to title case")
+		("uppercase,u", "Convert filename to uppercase")
+		("lowercase,l", "Convert filename to lowercase")
+		("firstcap,f", "Capitalize first letter, all others in lowercase")
 		("complex,c","Complex capitalization scheme."
 			"\nInitially prompt for a set of characters for tokenization."
 			"\nEach token will be converted separately"
@@ -185,30 +195,29 @@ void define_options(boost::program_options::options_description &desc)
 int define_style(void)
 {
 //	This subroutine defines the command line style
+	namespace ncs = npo::command_line_style;
 	int style;
 	if (BOOST_OS_UNIX)
-		style = boost::program_options::command_line_style::unix_style;
+		style = ncs::unix_style;
 	else if (BOOST_OS_WINDOWS)
-		style = boost::program_options::command_line_style::unix_style |
-				boost::program_options::command_line_style::case_insensitive |
-				boost::program_options::command_line_style::allow_slash_for_short;
+		style = ncs::unix_style | ncs::case_insensitive | ncs::allow_slash_for_short;
 
 	return style;
 }
 
 
-void parse_options(boost::program_options::options_description &desc, boost::program_options::variables_map &vm, int argc, char * argv[])
+void parse_options(npo::options_description &desc, npo::variables_map &vm, int argc, char * argv[])
 {
 	int style =	define_style();
 
-	boost::program_options::store(
-		boost::program_options::command_line_parser(argc,argv)
+	npo::store(
+		npo::command_line_parser(argc,argv)
 			.options(desc)
 			.style(style)
 			.run(),
 		vm);
 
-	boost::program_options::notify(vm);
+	npo::notify(vm);
 }
 
 
@@ -258,7 +267,7 @@ std::wstring titleCase(std::wstring inputString)
 }
 
 
-void loop_over_files(int fileNameOperation, boost::program_options::variables_map vm)
+void loop_over_files(int fileNameOperation, npo::variables_map vm)
 {
 //	This subroutine loops over the files of the current directory and renames the files
 	boost::filesystem::path d=boost::filesystem::current_path();
@@ -283,7 +292,7 @@ void loop_over_files(int fileNameOperation, boost::program_options::variables_ma
 }
 
 
-std::wstring convertFileName(int fileNameOperation, boost::program_options::variables_map vm, std::wstring fileName)
+std::wstring convertFileName(int fileNameOperation, npo::variables_map vm, std::wstring fileName)
 {
 //	This subroutine transforms the filename
 	std::wstring newFileName;
@@ -337,7 +346,7 @@ bool confirmChange(std::wstring fileName, std::wstring newFileName)
 }
 
 
-bool checkNoOp(int fileNameOperation, boost::program_options::variables_map vm)
+bool checkNoOp(int fileNameOperation, npo::variables_map vm)
 {
 //	This subroutine checks if filename altering options have been given
 //	If not, there is no reason to loop over the files.
@@ -345,10 +354,18 @@ bool checkNoOp(int fileNameOperation, boost::program_options::variables_map vm)
 	if (fileNameOperation != std::numeric_limits<int>::max())
 		return false;
 
-	if (vm.count("titlecase") || vm.count("uppercase") || vm.count("lowercase") || vm.count("firstcap") || vm.count("complex") )
-		return false;
+//	Check for flags. If conflicting operations are chosen simultaneously (eg converting to lowercase and uppercase), do not perform changes
+	int opSum = vm.count("titlecase") + vm.count("uppercase") + vm.count("lowercase") + vm.count("firstcap") + vm.count("complex");
 
-	return true;
+	if (opSum >= 2)
+	{
+		std::cout<<"Conflicting operations have been chosen!"<<std::endl;
+		return true;
+	}
+	else if (opSum == 0)
+		return true;
+
+	return false;
 }
 
 
@@ -356,3 +373,11 @@ void complex_transformation(std::wstring & newFileName)
 {
 	// To be implemented
 }
+
+void printVersion()
+{
+//	Versioning information
+//	Will be updated when changes are implemented
+	std::cout<<"Version 1: 31/8/2019\n";
+}
+
