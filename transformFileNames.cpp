@@ -378,6 +378,11 @@ void printVersion()
 {
 //	Versioning information
 //	Will be updated when changes are implemented
-	std::cout<<"Version 1: 31/8/2019\n";
+	int version = BOOST_VERSION_NUMBER(1,0,1);
+	std::cout << "Version: "
+				<< BOOST_VERSION_NUMBER_MAJOR(version) << "."
+				<< BOOST_VERSION_NUMBER_MINOR(version) << "."
+				<< BOOST_VERSION_NUMBER_PATCH(version)
+				<< "\n6/9/2019\n";
 }
 

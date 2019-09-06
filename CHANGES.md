@@ -1,7 +1,14 @@
+* 6/9/2019 transformFileNames.cpp
+
+Adopted Boost predefined symbols for versioning. The program is now using `BOOST_VERSION_NUMBER` and company. Updated version to 1.0.1.
+
+
 * 3/9/2019 transformFileNames.cpp
+
 Minor refactoring. Adopted namespace alias npo for boost::program_options. This shortens function prototypes significantly.
 A second namespace alias for boost::program_options::command_line_style has been adopted as well, but is limited to the appropriate function.
 Also added new option to print program version. Version number set to #1.
+
 
 * 21/5/2019 transformFileNames.cpp
 
@@ -9,7 +16,6 @@ Refactoring in smaller program units. The program now uses __boost/predef.h__ ma
 Added an interactive mode, which can be useful if one wants to rename only a few files in a directory and not all.
 This mode jumps in with the -i/--interactive flag at the command line. It can also take charge of things if the program
 starts with no options at the command line, by specifying a negative integer at the operation chooser menu screen.
-
 
 
 * 15/4/2019 space2Underscore.cpp
@@ -71,6 +77,7 @@ that an optional punctuation mark (eg parenthesis) may appear right after the sp
 with letters following it. In such occasion, the first of these letters should be in
 upper case. In the previous incarnation of the program, all letters would have
 been in lower case.
+
 
 * 3/7/2018	transformFileNames.cpp
 
