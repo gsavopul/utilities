@@ -21,7 +21,7 @@
 //# include <cctype>			// C
 
 // ------------------------------------------------------------------  containers
-//# include <vector>
+# include <vector>
 //# include <deque>
 //# include <list>
 //# include <set>
@@ -37,8 +37,8 @@
 //# include <complex>
 
 //  -----------------------------------------------------------------  algorithms
-//# include <algorithm>
-//# include <iterator>
+# include <algorithm>
+# include <iterator>
 //# include <utility>
 //# include <functional>
 //# include <numeric>
@@ -78,7 +78,7 @@
 //#include <typeinfo>
 //#include <cxxabi.h>
 
-//# include <ctime>				// C
+# include <ctime>				// C
 //# include <chrono>
 
 # include <boost/filesystem.hpp>
@@ -110,6 +110,8 @@ std::wstring convertFileName(int fileNameOperation, npo::variables_map vm, std::
 bool confirmChange(std::wstring fileName, std::wstring newFileName);
 bool checkNoOp(int fileNameOperation, npo::variables_map vm);
 void printVersion();
+void fill_date(int &day, int &month, int &year);
+void fill_time(int &hour, int &min, int &sec);
 
 
 //int main()
@@ -117,7 +119,7 @@ int main(int argc, char * argv[])
 {
     std::locale def_loc(std::locale(""));
     std::locale::global(def_loc);
-//    std::cout.imbue(lgr);
+    std::cout.imbue(def_loc);
 //    std::cin.imbue(lgr);
     //============Αρχή κώδικα==================================
 
@@ -374,15 +376,48 @@ void complex_transformation(std::wstring & newFileName)
 	// To be implemented
 }
 
+
+void fill_date(int &day, int &month, int &year)
+{
+	std::string date_string(__DATE__);
+
+	std::string month_string = date_string.substr(0,3);
+	day = std::stoi(date_string.substr(4,2));
+	year = std::stoi(date_string.substr(7,std::string::npos)) - 1900;
+
+	std::vector<std::string> months_of_year{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+	auto it = std::find(months_of_year.begin(), months_of_year.end(), month_string);
+	if (it != months_of_year.end())
+		month = distance(months_of_year.begin(), it);
+
+
+}
+
+
+void fill_time(int &hour, int &min, int &sec)
+{
+	std::string time_string(__TIME__);
+	hour = std::stoi(time_string.substr(0,2));
+	min = std::stoi(time_string.substr(3,2));
+	sec = std::stoi(time_string.substr(6,2));
+}
+
+
 void printVersion()
 {
 //	Versioning information
 //	Will be updated when changes are implemented
-	int version = BOOST_VERSION_NUMBER(1,0,1);
+	int version = BOOST_VERSION_NUMBER(1,0,2);
+
+	tm tms{};
+	fill_date(tms.tm_mday, tms.tm_mon, tms.tm_year);
+	fill_time(tms.tm_hour, tms.tm_min, tms.tm_sec);
+	time_t t = mktime(&tms);
+
 	std::cout << "Version: "
 				<< BOOST_VERSION_NUMBER_MAJOR(version) << "."
 				<< BOOST_VERSION_NUMBER_MINOR(version) << "."
 				<< BOOST_VERSION_NUMBER_PATCH(version)
-				<< "\n6/9/2019\n";
+				<< "\n" << std::put_time(&tms,"%A %d/%m/%Y, %T") << std::endl;
 }
 
