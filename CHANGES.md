@@ -1,5 +1,10 @@
 * 7/9/2019 transformFileNames.cpp
 
+Fixed the tm_isdst bug by setting the variable to -1 before calling mktime. Updated program version to 1.0.3.
+
+
+* 7/9/2019 transformFileNames.cpp
+
 Added code to read in the compile time and date from the predefined `__DATE__` and `__TIME__` strings.
 Updated program version to 1.0.2.
 

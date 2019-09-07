@@ -388,7 +388,7 @@ void fill_date(int &day, int &month, int &year)
 	std::vector<std::string> months_of_year{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
 	auto it = std::find(months_of_year.begin(), months_of_year.end(), month_string);
 	if (it != months_of_year.end())
-		month = distance(months_of_year.begin(), it);
+		month = std::distance(months_of_year.begin(), it);
 
 
 }
@@ -407,12 +407,14 @@ void printVersion()
 {
 //	Versioning information
 //	Will be updated when changes are implemented
-	int version = BOOST_VERSION_NUMBER(1,0,2);
+	int version = BOOST_VERSION_NUMBER(1,0,3);
 
 	tm tms{};
+	tms.tm_isdst=-1;
 	fill_date(tms.tm_mday, tms.tm_mon, tms.tm_year);
 	fill_time(tms.tm_hour, tms.tm_min, tms.tm_sec);
 	time_t t = mktime(&tms);
+
 
 	std::cout << "Version: "
 				<< BOOST_VERSION_NUMBER_MAJOR(version) << "."
